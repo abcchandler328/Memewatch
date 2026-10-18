@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MemeWatch</title>
+<style>
+body{margin:0;background:#0b1020;color:#eef2ff;font:16px Arial,sans-serif}
+header,main{max-width:1000px;margin:auto;padding:22px}
+header{border-bottom:1px solid #29344b}
+h1{color:#a99bff}
+.note{padding:14px;background:#332a19;border-radius:8px;color:#ffe0a0}
+input,select{padding:12px;background:#182239;color:white;border:1px solid #45516b;border-radius:7px;margin:5px 5px 15px 0}
+table{width:100%;border-collapse:collapse;background:#141c2e}
+th,td{text-align:left;padding:13px;border-bottom:1px solid #29344b}
+th{color:#a99bff}
+button{padding:8px;background:#27234b;color:white;border:1px solid #7770d9;border-radius:6px;cursor:pointer}
+.low{color:#5ce0a4}.medium{color:#ffd166}.high{color:#ff858c}
+</style>
+</head>
+<body>
+<header>
+<h1>◈ MEMEWATCH</h1>
+<p>Cross-chain memecoin intelligence dashboard</p>
+</header>
+<main>
+<div class="note"><b>DEMO MODE</b> — These are sample tokens and scores, not live data. No trading is enabled.</div>
+<h2>Token radar</h2>
+<input id="search" placeholder="Search tokens or chains">
+<select id="chain">
+<option value="">All chains</option>
+<option>Solana</option><option>Base</option><option>Ethereum</option>
+<option>BNB Chain</option><option>Arbitrum</option>
+</select>
+<table>
+<thead><tr><th>Token</th><th>Chain</th><th>Liquidity</th><th>Momentum</th><th>Risk</th><th>Watchlist</th></tr></thead>
+<tbody id="tokens"></tbody>
+</table>
+<h2>Safety monitor</h2>
+<p>Security checks are not connected yet. Unknown checks must never be treated as safe.</p>
+<h2>News and social monitor</h2>
+<p>News and social feeds will be connected in a later step.</p>
+<h2>Telegram alerts</h2>
+<p>Telegram notifications are not connected yet.</p>
+</main>
+<script>
+const data=[
+{s:"PEPEX",c:"Base",l:18400,m:94,r:78},
+{s:"SOLCAT",c:"Solana",l:76200,m:86,r:24},
+{s:"NFROG",c:"Ethereum",l:142000,m:71,r:16},
+{s:"MOONB",c:"BNB Chain",l:9100,m:63,r:88},
+{s:"BASEDOG",c:"Base",l:33500,m:57,r:35},
+{s:"ARBPEPE",c:"Arbitrum",l:51000,m:42,r:52}
+];
+const saved=new Set();
+function render(){
+const q=document.getElementById("search").value.toLowerCase();
+const c=document.getElementById("chain").value;
+const rows=data.filter(t=>(!c||t.c===c)&&(t.s+" "+t.c).toLowerCase().includes(q));
+document.getElementById("tokens").innerHTML=rows.map(t=>`
+<tr><td><b>${t.s}</b></td><td>${t.c}</td><td>$${t.l.toLocaleString()}</td>
+<td>${t.m}/100</td><td class="${t.r>=60?"high":t.r>=30?"medium":"low"}">${t.r}/100</td>
+<td><button data-symbol="${t.s}">${saved.has(t.s)?"Saved ★":"Save ☆"}</button></td></tr>`).join("");
+document.querySelectorAll("[data-symbol]").forEach(b=>b.onclick=()=>{
+const s=b.dataset.symbol;saved.has(s)?saved.delete(s):saved.add(s);render();
+});
+}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("chain").addEventListener("change",render);
+render();
+</script>
+</body>
+</html>
